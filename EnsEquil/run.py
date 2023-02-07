@@ -182,7 +182,7 @@ class Ensemble():
         # This is nasty - assumes naming always the same
         for run in range(1, ensemble_size + 1):
             with open(f"{self.output_dir}/freenrg-MBAR-run_{str(run).zfill(2)}.dat", "w") as ofile:
-                _subprocess.run(["/home/finlayclark/sire.app/bin/analyse_freenrg",
+                _subprocess.run(["/export/users/finlayclark/sire.app/bin/analyse_freenrg",
                                 "mbar", "-i", f"{output_dir}/lambda*/run_{str(run).zfill(2)}/simfile_equilibrated.dat",
                                  "-p", "100", "--overlap", "--temperature",
                                  "298.0"], stdout=ofile)
@@ -615,7 +615,7 @@ class Simulation():
         self._set_n_cycles(n_cycles)
 
         # Run SOMD
-        cmd = f"~/Documents/research/scripts/abfe/rbatch.sh --chdir {self.output_subdir} {self.output_subdir}/input/run_somd.sh {self.lam}"
+        cmd = f"sbatch --chdir {self.output_subdir} {self.output_subdir}/input/run_somd.sh {self.lam}"
         process = _subprocess.Popen(cmd, shell=True, stdin=_subprocess.PIPE,
                                     stdout=_subprocess.PIPE, stderr=_subprocess.STDOUT,
                                     close_fds=True)
