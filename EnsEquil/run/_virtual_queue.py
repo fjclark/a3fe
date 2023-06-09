@@ -249,3 +249,13 @@ class VirtualQueue():
         while len(self.queue) > 0:
             self.update()
             _sleep(30)
+
+    def _close_logging_handlers(self) -> None:
+        """Close the logging file handlers. This can be
+        useful when loading and closing many Calculations,
+        as deleting the Calculation objects will not close
+        the file handlers."""
+        handlers = self._logger.handlers[:]
+        for handler in handlers:
+            self._logger.removeHandler(handler)
+            handler.close()

@@ -477,6 +477,9 @@ class SimulationRunner(ABC):
             handler.close()
         for sub_sim_runner in self._sub_sim_runners:
             sub_sim_runner._close_logging_handlers()
+        # Remember to close the virtual queue logging handlers too
+        if hasattr(self, "virtual_queue"):
+            self.virtual_queue._close_logging_handlers()
 
     def _update_log(self) -> None:
         f""" Update the status log file with the current status of the {self.__class__.__name__}."""
