@@ -37,8 +37,7 @@ class Set(_SimulationRunner):
                  base_dir: _Optional[str] = None,
                  input_dir: _Optional[str] = None,
                  output_dir: _Optional[str] = None,
-                 stream_log_level: int = _logging.INFO,
-                 update_paths: bool = True) -> None:
+                 stream_log_level: int = _logging.INFO) -> None:
         """
         Instantiate a calculation based on files in the input dir. If calculation.pkl exists in the
         base directory, the calculation will be loaded from this file and any arguments
@@ -64,9 +63,6 @@ class Set(_SimulationRunner):
         stream_log_level : int, Optional, default: logging.INFO
             Logging level to use for the steam file handlers for the
             set object and its child objects.
-        update_paths: bool, Optional, default: True
-            If True, if the simulation runner is loaded by unpickling, then
-            update_paths() is called.
 
         Returns
         -------
@@ -75,8 +71,7 @@ class Set(_SimulationRunner):
         super().__init__(base_dir=base_dir,
                          input_dir=input_dir,
                          output_dir=output_dir,
-                         stream_log_level=stream_log_level,
-                         update_paths=update_paths)
+                         stream_log_level=stream_log_level)
         
         if not self.loaded_from_pickle:
             # Load/ create the Calculations - temporarily shift to the Calculation base dir

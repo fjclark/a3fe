@@ -38,8 +38,7 @@ class SimulationRunner(ABC):
                  output_dir: _Optional[str] = None,
                  stream_log_level: int = _logging.INFO,
                  dg_multiplier: int = 1,
-                 ensemble_size: int = 5,
-                 update_paths: bool =True) -> None:
+                 ensemble_size: int = 5) -> None:
         """
         base_dir : str, Optional, default: None
             Path to the base directory for the simulation runner.
@@ -61,9 +60,6 @@ class SimulationRunner(ABC):
             free energy change for the super simulation-runner.
         ensemble_size : int, Optional, default: 5
             Number of repeats to run.
-        update_paths: bool, Optional, default: True
-            If True, if the simulation runner is loaded by unpickling, then
-            update_paths() is called.
         """
         # Set up the directories (which may be overwritten if the 
         # simulation runner is subsequently loaded from a pickle file)
@@ -91,18 +87,7 @@ class SimulationRunner(ABC):
         # Check if we are starting from a previous simulation runner
         self.loaded_from_pickle = False
         if _pathlib.Path(f"{base_dir}/{self.__class__.__name__}.pkl").is_file():
-            self._load() # May overwrite the above attributes and options
-
-            # Update the paths if required
-            if update_paths:
-                # Find out what the new base dir should be
-                if base_dir is None:
-                    new_sub_path = _os.getcwd()
-                else:
-                    new_sub_path = base_dir
-                # The sub path will have changed if we've moved the pickle
-                self.update_paths(old_sub_path=self.base_dir, 
-                                  new_sub_path=new_sub_path)
+            self._load(new_base_dir=base_dir) # May overwrite the above attributes and options
 
         else:
             # Initialise sub-simulation runners with an empty list
@@ -524,9 +509,17 @@ class SimulationRunner(ABC):
         for sub_sim_runner in self._sub_sim_runners:
             sub_sim_runner._dump()
 
-    def _load(self) -> None:
+    def _load(self, new_base_dir: str) -> None:
         """Load the state of the simulation object from a pickle file, and do
-        the same for any sub-simulations."""
+        the same for any sub-simulations.
+        
+        Parameters
+        ----------
+        new_base_dir : str
+            The absolute path of the new base directory for the simulation. 
+            This is used to update the paths of the simulation and any sub-simulation 
+            runners.
+        """
         # Note that we cannot recursively call _load on the sub-simulations
         # because this results in the creation of different virtual queues for the
         # stages and sub-lam-windows and simulations
@@ -537,9 +530,11 @@ class SimulationRunner(ABC):
         with open(f"{self.base_dir}/{self.__class__.__name__}.pkl", "rb") as file:
             self.__dict__ = _pkl.load(file)
 
-        # Refresh logging
+        print("Ensuring that paths are correct...")
+        self.update_paths(old_sub_path=self.base_dir, 
+                            new_sub_path=new_base_dir)
+
         print("Setting up logging...")
         self._refresh_logging()
 
-        # Record that the object was loaded from a pickle file
         self.loaded_from_pickle = True

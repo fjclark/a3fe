@@ -43,8 +43,7 @@ class Simulation(_SimulationRunner):
                  base_dir: _Optional[str] = None,
                  input_dir: _Optional[str] = None,
                  output_dir: _Optional[str] = None,
-                 stream_log_level: int=_logging.INFO,
-                 update_paths: bool = True) -> None:
+                 stream_log_level: int=_logging.INFO) -> None:
         """
         Initialise a Simulation object.
 
@@ -68,9 +67,6 @@ class Simulation(_SimulationRunner):
         stream_log_level : int, Optional, default: logging.INFO
             Logging level to use for the steam file handlers for the
             simulation object and its child objects.
-        update_paths: bool, Optional, default: True
-            If True, if the simulation runner is loaded by unpickling, then
-            update_paths() is called.
 
         Returns
         -------
@@ -84,8 +80,7 @@ class Simulation(_SimulationRunner):
         super().__init__(base_dir=base_dir,
                          input_dir=input_dir,
                          output_dir=output_dir,
-                         stream_log_level=stream_log_level,
-                         update_paths=update_paths)
+                         stream_log_level=stream_log_level)
 
         if not self.loaded_from_pickle:
             self.virtual_queue=virtual_queue
